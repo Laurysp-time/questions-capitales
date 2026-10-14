@@ -109,8 +109,31 @@ def resultPrint(usedList,informations) :
         if succeed : print("-réussi-.")
         else : print("-échoué-.")
 
+
+def savingData(informations,file) :
+    """Retranscrire Les noms, comme ils étaient au départ, car ils ne sont pas récupérés à nouveau, donc introuvables"""
+    data = ""
+    for nameType, country, capital in informations :
+        data = data + country + "("+nameType+")," + capital + "\n"
+    with open(file, "w") as f :
+        f.write(data)
+def selecting(informations, resultList, filter = 0) :
+    """Récupère les résutats en fonction d'un filtre : <i><b>Sans filtre, uniquement gagnants, uniquement perdants</b></i>"""
+    if filter < 0 or filter > 2 :
+        print("Niveau de filtre non reconnu, repositionné à 0")
+    lastingData = []
+    if filter == 0 :
+        for index,result in resultList :
+            lastingData.append(informations[index])
+    elif filter == 1 :
+        for index,result in resultList :
+            if result : lastingData.append(informations[index])
+    else : 
+        for index,result in resultList :
+            if not result : lastingData.append(informations[index])
+    return lastingData
 try :
-    capFile = open("capPartiel.csv", "r", encoding= "utf-8")
+    capFile = open("capitales.csv", "r", encoding= "utf-8")
 except :
     raise Exception ("The extraction went wrong. \n")
 
