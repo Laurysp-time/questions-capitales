@@ -1,23 +1,25 @@
 import sys
 from random import randint
-if len(sys.argv) == 1 :
-    raise ValueError ("Ce script a pour but d'être utilisé dans le terminal, avec 1 ou 2 paramètres additionnels. ")
-if len (sys.argv) > 3  :
-    raise ValueError ("Pour l'instant, il n'est pas possible d'utiliser ce programme avec plus de deux arguments. ")
+entryLenght = len(sys.argv) 
+if entryLenght == 1 :
+    raise ValueError ("Ce script a pour but d'être utilisé dans le terminal, avec 1 à 3 paramètres additionnels. ")
+if entryLenght > 4  :
+    raise ValueError ("Pour l'instant, il n'est pas possible d'utiliser ce programme avec plus de 3 arguments. ")
 
 
 
-def allDigit (list : list, b : int |None =0) -> bool : #b for begining
+
+def allNumbers (list : list[str], b : int |None =0) -> bool : #b for begining
     """D'une liste de textes, détermine si tous sont des numéros. """
     allD = True
     n = b
     while allD and n < len(list) :
-        if not list[n].isdigit() : allD = False
+        if not (list[n]).isnumeric() : allD = False
         n += 1
     return allD 
 
-if not(allDigit(sys.argv[1:])) :
-    raise ValueError ("Les arguments de ce scipt ne peuvent être que des nombres.")
+if not(allNumbers(sys.argv[1:2])) :
+    raise ValueError ("Les arguments de 'nombre de questions' et 'mode de fonctionnement' ne peuvent être que des nombres.")
 
 def traitement(file ) -> list [tuple]  :
     """Récupère d'un fichier ouvert le contenu à partir d'un traitement, récupérant determinant , nom et capitale""" 
@@ -180,6 +182,7 @@ def selecting(resultList : list ,informations : list, filter : int | None = 0) :
 
 
 def proposeSaving(results : tuple, informations : list) :
+    """Une fonction simple qui permet de poser des questions pour la sauvegarde et sauvegarder"""
     answer = (input("Veux-tu sauvegader quelquechose ? Si oui,quelle partie des résultats ?\n 1 = Tout, 2 = réussites, 3 = échecs")).strip()
     if not answer.isnumeric() :
         print("Format de chiffres non reconnu. ce sera un non.")
@@ -197,10 +200,11 @@ def proposeSaving(results : tuple, informations : list) :
         print("Format de nombre non reconnu. Création d'un nouveau fichier. ")
         answer = "0"
     ans = int(answer)
+    
     if ans < 0 or ans > 1 :
         print("Valeur non attendue :", end="")
         ans = 0
-    if ans == 0 :#ici, ce n'est pas égal. à revoir...
+    if ans == 0 :#à revoir
         print("création d'un nouveau dossier. ",end="")
         answer = input("Quel sera son nom ? :").strip()
         ndot = answer.count(".")
@@ -225,26 +229,33 @@ def proposeSaving(results : tuple, informations : list) :
         savingAt(selection)
 
 
+def fileTaker(fileName :str) :
+    try :
+        capFile = open(fileName, "r", encoding= "utf-8")
+    except :
+        print("The extraction of",fileName,"went wrong. ")
+        return None
+    return capFile
 
+infoFileName = "Capitales.csv"
+capFile : str = None
+if entryLenght == 4 : #si on précise une liste
+    wantedFile = sys.argv[3]
+    capFile = fileTaker(wantedFile)
+if capFile == None : 
+    print("Trying to get the countries informations in", infoFileName+".")
+    capFile = fileTaker(infoFileName)
+    if capFile == None :
+        print("The default file :",infoFileName,"has not been extracted well. \n try checking the paths")
+        sys.exit()
 
-
-       
-       
-        
-        
-
-
-
-
-try :
-    capFile = open("capitales.csv", "r", encoding= "utf-8")
-except :
-    raise Exception ("The extraction went wrong. \n")
 
 questionNumber = int(sys.argv[1])  # 
+
+mode : int= None
 if len(sys.argv) > 2 : 
     mode = int(sys.argv[2])
-else : mode = 1
+
 countriesInfos = traitement(capFile)
 capFile.close()
 results = randomAsking(questionNumber, countriesInfos, mode)
