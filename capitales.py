@@ -1,10 +1,13 @@
 import sys
 from random import randint
+
 entryLenght = len(sys.argv) 
 if entryLenght == 1 :
     raise ValueError ("Ce script a pour but d'être utilisé dans le terminal, avec 1 à 3 paramètres additionnels. ")
 if entryLenght > 4  :
     raise ValueError ("Pour l'instant, il n'est pas possible d'utiliser ce programme avec plus de 3 arguments. ")
+
+
 
 
 
@@ -89,7 +92,7 @@ def countryAsk (infos : tuple) -> bool :
     print("La réponse était :",nameType ,country)
     return statement
 
-def alternatAsking (infos, n) -> bool:
+def alternateAsking (infos, n) -> bool:
     if (n%2) == 0 : return countryAsk(infos)
     else : return capitalAsk(infos)
 def randomAltAsk(infos) -> bool :
@@ -102,7 +105,7 @@ def randomAsking(number : int , informations : list, mode : int | None = 1) -> t
     ~
     Récupère le nombre de questions, les informations sur les pays et, optionellement, le mode de questionnement. 
     Retourne un tuple avec le score et la site des questions passées(en tuple index-résultat)."""
-    askWays = (capitalAsk,countryAsk)
+    askWays = (capitalAsk,countryAsk,alternateAsking,randomAltAsk)
     try : 
         ask = askWays [mode - 1]
     except :  
