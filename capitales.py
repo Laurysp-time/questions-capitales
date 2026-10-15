@@ -13,13 +13,34 @@ def allNumbers (list : list[str], b : int |None =0) -> bool : #b for begining
     """D'une liste de textes, détermine si tous sont des numéros. """
     allD = True
     n = b
-    while allD and n < len(list) :
+    while allD and n < (len(list)- b):
         if not (list[n]).isnumeric() : allD = False
         n += 1
     return allD 
+def countNumbers(list : list[str],b : int | None = 0) -> int :
+    """Rend le nombre de nombres dans une liste."""
+    numberCounter = 0
+    for string in list :
+        if string.isnumeric() :
+            numberCounter += 1
+    return numberCounter
+def getTwoLists(list : list[str], b : int |None = 0) -> tuple[list[int], list[str]] :
+    """En prévision et prération de plus de modularité pour d'autres sytèmes à venir.
+    ~ 
+    Différentie et convertie les int des strings en deux listes distinctes"""
+    intList = []
+    stringList = []
+    for string in list :
+        if string.isnumeric() : intList.append(int(string))
+        else : stringList.append(string)
+    return (intList,stringList)
+nIntEntry = countNumbers(sys.argv[1:]) #à voir si on ne fait pas getTwoLists plus tôt pour compter.
+if (nIntEntry) < entryLenght - 2 :#qu'un seul paramètre liste possible, pour l'instant
+    # -2 parce que la liste peut contenir déjà 1 : le nom de la fonction, 2 : le nom du fichier de récup.
+    raise ValueError ("Les arguments de 'nombre de questions' et 'mode de fonctionnement' ne peuvent être que des nombres. \n il ne peut y avoir qu'un seul paramètre texte")
+elif nIntEntry > 2 :
+    raise ValueError ("Il ne peut, pour l'intant avoir plus de 2 arguments numériques.")
 
-if not(allNumbers(sys.argv[1:2])) :
-    raise ValueError ("Les arguments de 'nombre de questions' et 'mode de fonctionnement' ne peuvent être que des nombres.")
 
 def traitement(file ) -> list [tuple]  :
     """Récupère d'un fichier ouvert le contenu à partir d'un traitement, récupérant determinant , nom et capitale""" 
@@ -82,7 +103,8 @@ def randomAsking(number : int , informations : list, mode : int | None = 1) -> t
     Récupère le nombre de questions, les informations sur les pays et, optionellement, le mode de questionnement. 
     Retourne un tuple avec le score et la site des questions passées(en tuple index-résultat)."""
     askWays = (capitalAsk,countryAsk)
-    try : ask = askWays [mode - 1]
+    try : 
+        ask = askWays [mode - 1]
     except :  
         print("Mode de fonctionnement non reconnu, initialisé à 1. ") #à voir plus tard si jamais on veut redemander
         ask = (askWays[0])
@@ -139,7 +161,7 @@ def savingAt(Data : str, maxTries : int | None = 3, mode : str | None = "w") :
         else :
             print("Fichier sauvegardé. ")
     file.close()
-def savingIn (data : str,fileName : str | None= "CapitalesSave.csv") :
+def savingIn (data : str,fileName : str | None= "CapitalesSave.csv") :#le 'None' est là pour faire joli
     """Crée un nouveau fichier qui contient les données envoyées. <br> On rajoute <b>(n)</b> si le nom était déjà utilisé  """
     opened = False
     tries = 0
@@ -200,7 +222,7 @@ def proposeSaving(results : tuple, informations : list) :
         print("Format de nombre non reconnu. Création d'un nouveau fichier. ")
         answer = "0"
     ans = int(answer)
-    
+
     if ans < 0 or ans > 1 :
         print("Valeur non attendue :", end="")
         ans = 0
@@ -213,7 +235,9 @@ def proposeSaving(results : tuple, informations : list) :
             print("Aucune extension, donc nom du fichier modifié : ",answer)
         elif ndot != 1 : answer = None
         if answer =="" : answer = None
-        savingIn(selection, answer)
+        if answer != None :
+            savingIn(selection, answer)
+        else : savingIn(selection )#ça me permet de contourner le problème
     if ans == 1 :
         answer = input("Ajout(1) or Écrasement(2) ? ")
         if not answer.isnumeric():
@@ -230,6 +254,7 @@ def proposeSaving(results : tuple, informations : list) :
 
 
 def fileTaker(fileName :str) :
+    """respect the <b>D.R.Y.</b> rule"""
     try :
         capFile = open(fileName, "r", encoding= "utf-8")
     except :
@@ -237,24 +262,27 @@ def fileTaker(fileName :str) :
         return None
     return capFile
 
+
+entryInts,entryStrings = getTwoLists(sys.argv[1:])
+
 infoFileName = "Capitales.csv"
-capFile : str = None
-if entryLenght == 4 : #si on précise une liste
-    wantedFile = sys.argv[3]
+capFile = None
+if len(entryStrings) > 0 : #si on précise une liste
+    wantedFile = entryStrings[0]
     capFile = fileTaker(wantedFile)
 if capFile == None : 
-    print("Trying to get the countries informations in", infoFileName+".")
+    print("Récupière les information à partir du fichier :", infoFileName+".")
     capFile = fileTaker(infoFileName)
     if capFile == None :
         print("The default file :",infoFileName,"has not been extracted well. \n try checking the paths")
         sys.exit()
 
-
-questionNumber = int(sys.argv[1])  # 
-
-mode : int= None
-if len(sys.argv) > 2 : 
-    mode = int(sys.argv[2])
+questionNumber = 3 # valeur par défaut
+if nIntEntry > 0 :
+    questionNumber = entryInts[0]
+mode : int= 1
+if nIntEntry == 2 : 
+    mode = entryInts[1]
 
 countriesInfos = traitement(capFile)
 capFile.close()
