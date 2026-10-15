@@ -7,7 +7,7 @@ if len (sys.argv) > 3  :
 
 
 
-def allDigit (list, b=0) -> bool : #b for begining
+def allDigit (list : list, b : int |None =0) -> bool : #b for begining
     """D'une liste de textes, détermine si tous sont des numéros. """
     allD = True
     n = b
@@ -19,7 +19,7 @@ def allDigit (list, b=0) -> bool : #b for begining
 if not(allDigit(sys.argv[1:])) :
     raise ValueError ("Les arguments de ce scipt ne peuvent être que des nombres.")
 
-def traitement(file) -> list [tuple]  :
+def traitement(file ) -> list [tuple]  :
     """Récupère d'un fichier ouvert le contenu à partir d'un traitement, récupérant determinant , nom et capitale""" 
     infos = []
     cap = ""
@@ -38,7 +38,7 @@ def traitement(file) -> list [tuple]  :
         infos.append((typeC,country,cap))
     return infos
 
-def capitalAsk (infos) -> bool:
+def capitalAsk (infos : tuple) -> bool:
     nameType, country, capitale = infos #the only we to transcript a tuple
     print ("Quelle est la capitale ", end = "")
     if nameType == "le" : print("du ", end="") #I made for evry case possible, technically
@@ -54,7 +54,7 @@ def capitalAsk (infos) -> bool:
     print("La réponse était :", capitale)
     return stamement
 
-def countryAsk (infos) -> bool :
+def countryAsk (infos : tuple) -> bool :
     nameType, country, capitale = infos
     print( "Quel est le pays dont la capitale est",capitale, end = " ? : ")
     answer = input()
@@ -74,7 +74,7 @@ def randomAltAsk(infos) -> bool :
     if n== 0 : return capitalAsk(infos)
     else : return countryAsk(infos)
 
-def randomAsking(number, informations, mode = 1) -> tuple [int ,list[tuple[int, bool]]] : 
+def randomAsking(number : int , informations : list, mode : int | None = 1) -> tuple [int ,list[tuple[int, bool]]] : 
     """Pose un certain nombre de questions, à partir d'une liste. <i>Utilise randInt. </i>
     ~
     Récupère le nombre de questions, les informations sur les pays et, optionellement, le mode de questionnement. 
@@ -110,14 +110,59 @@ def resultPrint(usedList,informations) :
         else : print("-échoué-.")
 
 
-def savingData(informations,file) :
+def savingDataEncoding(informations : list[tuple]) :
     """Retranscrire Les noms, comme ils étaient au départ, car ils ne sont pas récupérés à nouveau, donc introuvables"""
     data = ""
     for nameType, country, capital in informations :
         data = data + country + "("+nameType+")," + capital + "\n"
-    with open(file, "w") as f :
-        f.write(data)
-def selecting(informations, resultList, filter = 0) :
+    return data
+def savingAt(Data : str, maxTries : int | None = 3, mode : str | None = "w") :
+    """Demande pour un nom de fichier pour sauvegarder les données avec un nombre d'essais limité"""
+    tries = 0
+    passed = False
+    while tries < maxTries and not passed : 
+        #J'ai trop le seum, y'aura pas d'erreur en fait.
+        #la fonction open crée un fichier s'il n'existe pas...
+        answer = input("À quel fichier ?")
+        tries += 1
+        try :
+            file = open(answer,mode)
+            file.write(Data)
+            passed = True
+        except FileNotFoundError :
+            print("Le fichier n'a pas été trouvé.")
+        except :
+            print("Quelquechose s'est mal passé lors de la sauvegarde.")
+            file.close()
+        else :
+            print("Fichier sauvegardé. ")
+    file.close()
+def savingIn (data : str,fileName : str | None= "CapitalesSave.csv") :
+    """Crée un nouveau fichier qui contient les données envoyées. <br> On rajoute <b>(n)</b> si le nom était déjà utilisé  """
+    opened = False
+    tries = 0
+    name = fileName
+    while not opened and tries < 5:
+        tries += 1
+        try :
+            file = open(name,"x")
+            opened = True
+        except FileExistsError:
+            name = fileName
+            dname = name.split(".") #découpé pour séparer de l'extension
+            name = dname[0] + "("+ tries + ")" +"." + dname[1]   
+        except :
+            print("La sauvegarde s'est mal passée. ")  
+            break
+    if not opened :
+        return
+    try :
+        file.write(data)
+    except : print("La sauvegarde des données s'est mal passée.")
+    file.close()
+
+
+def selecting(resultList : list ,informations : list, filter : int | None = 0) :
     """Récupère les résutats en fonction d'un filtre : <i><b>Sans filtre, uniquement gagnants, uniquement perdants</b></i>"""
     if filter < 0 or filter > 2 :
         print("Niveau de filtre non reconnu, repositionné à 0")
@@ -132,12 +177,71 @@ def selecting(informations, resultList, filter = 0) :
         for index,result in resultList :
             if not result : lastingData.append(informations[index])
     return lastingData
+
+
+def proposeSaving(results : tuple, informations : list) :
+    answer = (input("Veux-tu sauvegader quelquechose ? Si oui,quelle partie des résultats ?\n 1 = Tout, 2 = réussites, 3 = échecs")).strip()
+    if not answer.isnumeric() :
+        print("Format de chiffres non reconnu. ce sera un non.")
+        answer = "0"
+    ans = int(answer)
+    if ans < 1 or ans > 4 :
+        print("non. ok.")
+        return
+    
+    selection = selecting(results,informations,(ans-1))
+    selection = savingDataEncoding(selection)
+
+    answer = input("Créer (0) ou utiliser (1) un fichier pour la sauvegarde ? ").strip()
+    if not answer.isnumeric() :
+        print("Format de nombre non reconnu. Création d'un nouveau fichier. ")
+        answer = "0"
+    ans = int(answer)
+    if ans < 0 or ans > 1 :
+        print("Valeur non attendue :", end="")
+        ans = 0
+    if ans == 0 :#ici, ce n'est pas égal. à revoir...
+        print("création d'un nouveau dossier. ",end="")
+        answer = input("Quel sera son nom ? :").strip()
+        ndot = answer.count(".")
+        if ndot == 0 and answer != "" : 
+            answer = answer +".txt"
+            print("Aucune extension, donc nom du fichier modifié : ",answer)
+        elif ndot != 1 : answer = None
+        if answer =="" : answer = None
+        savingIn(selection, answer)
+    if ans == 1 :
+        answer = input("Ajout(1) or Écrasement(2) ? ")
+        if not answer.isnumeric():
+            print("Chiffre non reconnu, redirigé vers :")
+            answer = "2"
+        ans = int(answer)
+        if ans == 1 :
+            mode = "a"
+            print("Ajout de texte.")
+        else : 
+            mode = "x"
+            print("Écrasement.")
+        savingAt(selection)
+
+
+
+
+
+       
+       
+        
+        
+
+
+
+
 try :
     capFile = open("capitales.csv", "r", encoding= "utf-8")
 except :
     raise Exception ("The extraction went wrong. \n")
 
-questionNumber = int(sys.argv[1]) # 
+questionNumber = int(sys.argv[1])  # 
 if len(sys.argv) > 2 : 
     mode = int(sys.argv[2])
 else : mode = 1
