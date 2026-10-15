@@ -128,13 +128,13 @@ def randomAsking(number : int , informations : list, mode : int | None = 1) -> t
         nU -= 1
     return score, usedList
 
-def resultPrint(usedList,informations) :
+def resultPrint(usedList : list[int,bool],informations: list[tuple]) :
     for index, succeed in usedList :
-        print("Pays :",informations[index][1], end=" ")
+        print("Pays :",informations[index][1], end=";")
         print("Capitale :", informations[index][2], end= " ")
         print("résultat :", end= " ")
-        if succeed : print("-réussi-.")
-        else : print("-échoué-.")
+        if succeed : print("-réussi-")
+        else : print("-échoué-")
 
 
 def savingDataEncoding(informations : list[tuple]) :
@@ -291,3 +291,4 @@ countriesInfos = traitement(capFile)
 capFile.close()
 results = randomAsking(questionNumber, countriesInfos, mode)
 print("Tu as eu un résultat de",results[0],"points.")
+resultPrint(results[1],countriesInfos)
