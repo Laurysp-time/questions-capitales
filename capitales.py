@@ -11,7 +11,6 @@ if entryLenght > 4  :
 
 
 
-
 def allNumbers (list : list[str], b : int |None =0) -> bool : #b for begining
     """D'une liste de textes, détermine si tous sont des numéros. """
     allD = True
@@ -37,7 +36,9 @@ def getTwoLists(list : list[str], b : int |None = 0) -> tuple[list[int], list[st
         if string.isnumeric() : intList.append(int(string))
         else : stringList.append(string)
     return (intList,stringList)
+
 nIntEntry = countNumbers(sys.argv[1:]) #à voir si on ne fait pas getTwoLists plus tôt pour compter.
+
 if (nIntEntry) < entryLenght - 2 :#qu'un seul paramètre liste possible, pour l'instant
     # -2 parce que la liste peut contenir déjà 1 : le nom de la fonction, 2 : le nom du fichier de récup.
     raise ValueError ("Les arguments de 'nombre de questions' et 'mode de fonctionnement' ne peuvent être que des nombres. \n il ne peut y avoir qu'un seul paramètre texte")
@@ -143,26 +144,18 @@ def savingDataEncoding(informations : list[tuple]) :
     for nameType, country, capital in informations :
         data = data + country + "("+nameType+")," + capital + "\n"
     return data
-def savingAt(Data : str, maxTries : int | None = 3, mode : str | None = "w") :
+def savingAt(Data : str, mode : str | None = "w") :
     """Demande pour un nom de fichier pour sauvegarder les données avec un nombre d'essais limité"""
-    tries = 0
-    passed = False
-    while tries < maxTries and not passed : 
-        #J'ai trop le seum, y'aura pas d'erreur en fait.
-        #la fonction open crée un fichier s'il n'existe pas...
-        answer = input("À quel fichier ?")
-        tries += 1
-        try :
-            file = open(answer,mode)
-            file.write(Data)
-            passed = True
-        except FileNotFoundError :
-            print("Le fichier n'a pas été trouvé.")
-        except :
-            print("Quelquechose s'est mal passé lors de la sauvegarde.")
-            file.close()
-        else :
-            print("Fichier sauvegardé. ")
+    answer = input("À quel fichier ?")
+    tries += 1
+    try :
+        file = open(answer,mode)
+        file.write(Data)
+    except :
+        print("Quelquechose s'est mal passé lors de la sauvegarde.")
+        file.close()
+    else :
+        print("Fichier sauvegardé. ")
     file.close()
 def savingIn (data : str,fileName : str | None= "CapitalesSave.csv") :#le 'None' est là pour faire joli
     """Crée un nouveau fichier qui contient les données envoyées. <br> On rajoute <b>(n)</b> si le nom était déjà utilisé  """
@@ -258,10 +251,13 @@ def proposeSaving(results : tuple, informations : list) :
 
 def fileTaker(fileName :str) :
     """respect the <b>D.R.Y.</b> rule"""
+    capFile = None
     try :
         capFile = open(fileName, "r", encoding= "utf-8")
-    except :
-        print("The extraction of",fileName,"went wrong. ")
+    except FileNotFoundError :
+        print("Le fichier du nom de '"+fileName+"' n'a pas été trouvé.")
+    except Exception as er:
+        print("la récupération du fichier",fileName," s'est mal passé. Erreur :", type(er).__name__)
         return None
     return capFile
 
