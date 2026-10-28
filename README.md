@@ -1,10 +1,12 @@
-<h3>That's just a small class project, meant to test the use of scripts in the terminal.</h3>
+<h3>That's just a small class project, meant to test the use of scripts in the terminal and reading and the saving in python.
+<br><i>Could contain lots of errors.</i></h3>
 <br>
 All the text and comments are in french, but the code is in English. I don't know why.
 <br>
 Ask a number of time a random capital and country to know about.
 <br><i><b> I do not think coming back on it.</b></i>
 <br> I've already implemented a lot of features and I think it's enough for a small project...
+<br>
 <table align=center>
     <tr>
         <td><b><h4>Variable</h4></b></td>
@@ -54,7 +56,7 @@ Ask a number of time a random capital and country to know about.
         <td><b>/:</b>(<i>composition</i>)</td>
     </tr>
 </table>
-<br>In my system, the <b><i>unmarked</i></b> will have less importance, <br> as the marked ones can be placed anywhere (if there's spacing)
+<br>In the system, the <b><i>unmarked</i></b> information will have less importance, <br> as the signed ones can be placed anywhere (as long there's spacing)
 <br><br> Each data type is processed apart from another, <br>in example, <i><b>1 2 3</b></i> <br>equals <i><b>/s:3 /m:2 /n:1</b></i>, <br>equals <i><b>2 /n:1 3</b></i>, <br>and <i><b>1 2 3 4</b></i> it <b>throws an error</b> (too much of the same type : int).
 <br> A data type does not affect another.
 <br><br>I could implement the saveType but, I <b>can</b> not to.
