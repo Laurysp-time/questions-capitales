@@ -36,7 +36,7 @@ def fill(list1 : list, list2 : list, rElement = None, appAtFull : bool | None = 
         else : 
             full = True
             if not appAtFull : 
-                ValueError ("Plus de valeurs ont été données que le programme n'en récupère. À :", type(var).__name__,"=",var)
+                raise ValueError ("Plus de valeurs ont été données que le programme n'en récupère. À :", type(var).__name__,"=",var)
             list1.append(var)
     return list1
 
@@ -71,7 +71,7 @@ def refering(args : tuple, l : list) : #sert à rien ? il faut les None, je croi
     lenA = len(args)
     index = 0
     while index < lenA and index < len(l) :
-        if not(l[index] is None) :#NOTE : on met none mais on verra si on change. c qu'on doit utiliser 'is' , c'est plus simple. rElement a été retiré
+        if not(l[index] is None) :
             arguments[index] = l[index]
         index += 1
     return tuple(arguments)
@@ -108,8 +108,6 @@ def listBool(entry : str, guide : tuple) :
     return modificators 
 
 
-
-#TODO : encapsuler tout ça dans une fonction
 entries,unsigned = understand(sys.argv[1:],rules)
 unsignI,unsignS = getTwoLists(unsigned)
 
@@ -125,7 +123,7 @@ spécifications_Str : str = None #Peut-on faire qu'il prenne tous les trucs qui 
 infoFileName,saveFileName,spécifications_Str = refering((infoFileName,saveFileName,spécifications_Str),entryStrings)
 #vérifie que si on a marqué sans valeur, on mette la valeur déjà mise
 
-spécifications_bool : list [bool]= listBool(spécifications_Str,["r","e","S"])#TODO :A, w et L ? HACK : on laisse ça
+spécifications_bool : list [bool]= listBool(spécifications_Str,["r","e","S"])
 saveMode : int = None
 saveType : int = None
 if spécifications_bool[2] :
@@ -135,7 +133,7 @@ if spécifications_bool[2] :
 
 questionNumber : int = 3
 mode : int= 1
-questionNumber,mode,saveMode = refering((questionNumber,mode,saveMode),entryInts) #TODO verifier le saveMode, ça vaut la peine ? JSP
+questionNumber,mode,saveMode = refering((questionNumber,mode,saveMode),entryInts) 
 
 def parse(text:str) -> tuple : 
     if text == "" : return None 
@@ -157,13 +155,6 @@ def parse(text:str) -> tuple :
             cap2 = None
     return (determiner,country,(cap1,cap2)) #HACK : écoute, je voulais faire une classe, mais...
 
-def traitement(file ) -> list [tuple]  :
-    """Récupère d'un fichier ouvert le contenu à partir d'un traitement, récupérant determinant , nom et capitale""" 
-    infos = []
-    for line in ((file.read()).split("\n")) :#split au lieu de readlines car sinon on a des \n à la fin..
-        if line == "" : break
-        infos.append(parse(line))
-    return infos
 def comparateCapital(answer : str,cap : tuple[str]) :
     answer = answer.strip().lower()
     win = (cap[0].lower() == answer)
@@ -258,15 +249,6 @@ def resultPrint(usedList : list[int,bool],informations: list[tuple]) :
         else : print("-échoué-")
 
 
-def savingDataEncoding(informations : list[tuple]) :
-    """Retranscrire Les noms, comme ils étaient au départ, car ils ne sont pas récupérés à nouveau, donc introuvables
-    ~
-    hors service. ne sert plus à rien : <i>On ne retranscrit plus toutes les données."""
-    data = ""
-    for nameType, country, capital in informations :
-        data = data + country + " ("+nameType+")," + capital + "\n"
-    return data
-
 def savingAt(Data : str,Filename :str | None = "CapitalesSave.csv",mode : str | None = "w") -> bool :
     """sauvegarde un ficher à un emplacement, mode écrasement et mode ajout."""
     if not lexists(Filename) :
@@ -293,7 +275,7 @@ def savingIn (data : str,fileName : str | None= "CapitalesSave.csv", maxTries : 
             file = open(name,"x")
             opened = True
         except FileExistsError:
-            dname = fileName.split(".") #découpé pour séparer de l'extension
+            dname = fileName.split(".") # séparer de l'extension
             name = dname[0] + "("+ str(tries) + ")" +"." + dname[1]   
         except Exception as e:
             print("La sauvegarde s'est mal passée. Erreur :"+type(e).__name__)  
@@ -408,4 +390,4 @@ if spécifications_bool[0] :
     resultPrint(results[1],countriesInfos)
     print()
 if not spécifications_bool[1] : proposeSaving(results,countriesInfos,saveType,saveMode,saveFileName) 
-#HACK : j'ai mis tous les paramètes car il y avait des 'UnboundLocal' error comme je modifie les valeurs...
+

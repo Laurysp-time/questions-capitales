@@ -1,10 +1,10 @@
 <h3>That's just a small class project, meant to test the use of scripts in the terminal.</h3>
 <br>
-All the text and comments are in french, but the code is in English.I don't know why.
+All the text and comments are in french, but the code is in English. I don't know why.
 <br>
 Ask a number of time a random capital and country to know about.
-<br><i><b> I don't think coming back on it.</b></i>
-<br> I've implemented a lot of features and I think it's enough
+<br><i><b> I do not think coming back on it.</b></i>
+<br> I've already implemented a lot of features and I think it's enough for a small project...
 <table align=center>
     <tr>
         <td><b><h4>Variable</h4></b></td>
@@ -29,7 +29,7 @@ Ask a number of time a random capital and country to know about.
         <td><b>Save mode</b></td>
         <td><i>int</i></td>
         <td>Gives a choice between 3 saving modes :
-        <br>-<b>1</b>:Create a new file; -<b>2-3</b>:Using an existing(<i>creating if not exists</i>){-appending;-wrinting} </td>
+        <br>-<b>1</b>:Create a new file; -<b>2-3</b>:Using an existing(<i>creating if not exists</i>){appending or wrinting} </td>
         <td><b>/s:</b>(<i>number</i>)</td>
     </tr>
     <tr>
@@ -59,4 +59,4 @@ Ask a number of time a random capital and country to know about.
 <br> A data type does not affect another.
 <br><br>I could implement the saveType but, I <b>can</b> not to.
 <br>(it is also the only way left to reject the saving ? to see)
-<br><br> There is many functions wich are left unused...Next commit ? (with fixes)
+<br>There is <b>much</b> left to do but I will leave it like that. 
