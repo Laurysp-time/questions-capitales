@@ -3,9 +3,10 @@ from random import randint
 from os.path import lexists #C'est juste pour dire si le fichier n'existe pas.(sans causer exprès FileExistsError)
 entryLenght = len(sys.argv) 
 if entryLenght == 1 :
-    print("Ce script a pour but d'être utilisé dans le terminal, avec des paramètres additionnels. ") #NOTE : même s'il  y a moyen de faire sans.
+    print("\nInformation: Ce script a pour but d'être utilisé dans le terminal, avec des paramètres additionnels.\n") #NOTE : même s'il  y a moyen de faire sans.
 if entryLenght > 6  :
-    raise ValueError ("Ce ne serait pas bon de le faire tourner avec plus de 10 arguments ")
+    print("Ce script ne peut fonctionner avec plus de 6 arguments pour l'instant.")#se serait fait bloquer plus tard. on sauve du temps
+    sys.exit()
 
 
 #changement fait : on ne décode pas le tout au départ.
@@ -36,7 +37,8 @@ def fill(list1 : list, list2 : list, rElement = None, appAtFull : bool | None = 
         else : 
             full = True
             if not appAtFull : 
-                raise ValueError ("Plus de valeurs ont été données que le programme n'en récupère. À :", type(var).__name__,"=",var)
+                print("\nErreur de Valeur : Plus de valeurs de type '"+ type(var).__name__+ "' ont été données que le nombre que programme n'en récupère :",var,"\n")
+                sys.exit()
             list1.append(var)
     return list1
 
@@ -89,7 +91,8 @@ def toIntVerify(list : list[str]) -> list[int] :
         if t.isnumeric() :
             intlist.append(int(t))
         else :
-            raise ValueError ("Une valeur pointée pour être un nombre n'en serait pas un : '" + t+"'")
+            print("\nErreur de Valeur : Une valeur pointée pour être un nombre n'en serait pas un : '" + t+"'\n")
+            sys.exit()
     return intlist
 
 def listBool(entry : str, guide : tuple) :
@@ -108,16 +111,16 @@ def listBool(entry : str, guide : tuple) :
     return modificators 
 
 
-entries,unsigned = understand(sys.argv[1:],rules)
-unsignI,unsignS = getTwoLists(unsigned)
+entries,unsigned = understand(sys.argv[1:],rules) #le premier est le script. je crois.
+unsignI,unsignS = getTwoLists(unsigned)#Int,String
 
 entryInts = fill(toIntVerify(entries[:3]),unsignI) 
 entryStrings = fill(entries[3:], unsignS)
 nIntEntry = len(entryInts) #ça fait beaucoup là non ? ça sert à rien ? si on fait to int verify
 
-defaultFileName = "Capitales.csv"
-defaultSaveName = "CapitalesSave.csv"
-infoFileName : str = defaultFileName
+
+defaultSaveName = "CapitalesSave.csv"#On peut le laisser pour la compréhension...
+infoFileName : str = "Capitales.csv"
 saveFileName : str = None
 spécifications_Str : str = None #Peut-on faire qu'il prenne tous les trucs qui suivent, avec et/ou sans espaces ?
 infoFileName,saveFileName,spécifications_Str = refering((infoFileName,saveFileName,spécifications_Str),entryStrings)
@@ -161,7 +164,7 @@ def comparateCapital(answer : str,cap : tuple[str]) :
     if (not win) and (not (cap[1] is None)) :
         win = (cap[1].lower() == answer )
     return win
-def capitalAsk (infos : tuple) -> bool:
+def capitalAsk (infos : tuple[str,str,tuple]) -> bool:
     nameType, country, capitale = infos #the only we to transcript a tuple
     print ("Quelle est la capitale ", end = "")
 
@@ -182,12 +185,12 @@ def capitalAsk (infos : tuple) -> bool:
 
     return stamement
 
-def countryAsk (infos : tuple) -> bool :
+def countryAsk (infos : tuple[str,str,tuple]) -> bool :
     nameType, country, capitale = infos
     print( "Quel est le pays dont la capitale est ",end="")
     if capitale[1] is None :
         print(capitale[0], end="")
-    else : print("'"+capitale[0]+"'"+" ou "+"'"+capitale[1]+"'")#HACK : à revoir
+    else : print("'"+capitale[0]+"'"+" ou "+"'"+capitale[1]+"'")
     print(" ? :", end= "")
     answer = input()
     statement = True
@@ -219,7 +222,8 @@ def randomAsking(number : int , informations : list, mode : int | None = 1) -> t
         ask = (askWays[0])
     nU = len(informations)
     if nU < number :
-        raise ArithmeticError ("Le nombre de questions est supérieur au nombre de pays disponibles")
+        print("\nLe nombre de questions est supérieur au nombre de pays disponibles :",number,"questions pour",nU,"pays disponibles.\n")
+        sys.exit()
     usableList = [i for i in range(nU)]
     usedList = []
     score = 0
@@ -264,7 +268,7 @@ def savingAt(Data : str,Filename :str | None = "CapitalesSave.csv",mode : str | 
         print("Fichier sauvegardé. ")
     file.close()
     return True
-def savingIn (data : str,fileName : str | None= "CapitalesSave.csv", maxTries : int | None = 5) -> bool :
+def savingIn (data : str,fileName : str | None= "CapitalesSave.csv", maxTries : int | None = 5)  :
     """Crée un nouveau fichier qui contient les données envoyées. <br> On rajoute <b>(n)</b> si le nom était déjà utilisé  """
     opened = False
     tries = 0
@@ -284,19 +288,19 @@ def savingIn (data : str,fileName : str | None= "CapitalesSave.csv", maxTries : 
             print("le fichier " + name + " a été créé.")
     if not opened :
         print("Le nombre maximal d'essais de ",maxTries," est dépassé. Abandon de la sauvegarde.")
-        return False
+        return 
     try :
         #print(data)
         file.write(data)
         file.close()
     except Exception as e :
-        print("La sauvegarde des données s'est mal passée.")
+        print("La sauvegarde des données s'est mal passée : ",end="")
         print(type(e).__name__)
-        return False
-    else : return True
+        return 
+    else : return 
  
     
-def selecting(resultList : list ,informations : list, filter : int | None = 0) :
+def selecting(resultList : list ,informations : list, filter : int | None = 0)->str :
     """Récupère les résutats en fonction d'un filtre : <i><b>Sans filtre, uniquement gagnants, uniquement perdants</b></i>
     <p> Rend un type <b><i>String</i></b>"""
     data = ""
@@ -307,10 +311,9 @@ def selecting(resultList : list ,informations : list, filter : int | None = 0) :
         for index,result in resultList :
             if not result : data += (informations[index]) + "\n"
     else :
-        if filter != 0 : print("Niveau de filtre non reconnu, repositionné à 0")
+        if filter != 0 : print("Niveau de filtre non reconnu, redéfini à 0")
         for index,result in resultList :
-            data += (informations[index]) + "\n"
-        
+            data += (informations[index]) + "\n"  
     return data
 
 
@@ -359,7 +362,7 @@ def proposeSaving(results : tuple, informations : list[tuple],saveType : int, sa
             mode = "w"
             print("Écrasement.")
         savingAt(selectedData,saveFileName,mode)
-
+    return
 def fileTaker(fileName :str) :
     """respect the <b>D.R.Y.</b> rule"""
     capFile = None
@@ -374,7 +377,7 @@ def fileTaker(fileName :str) :
 
 
 
-if infoFileName != defaultFileName : 
+if infoFileName != "Capitales.csv" : 
     print("Récupère les information à partir du fichier : "+ infoFileName+".")
 capFile = fileTaker(infoFileName)
 if capFile is None :
