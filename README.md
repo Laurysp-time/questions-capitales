@@ -1,4 +1,4 @@
-<h3>That's just a small class project, meant to test the use of scripts in the terminal and reading and the saving in python.
+<h3>That's just a small class project, meant to test the use of scripts in the terminal and reading and the saving files in python.
 <br><i>Could contain lots of errors.</i></h3>
 <br>
 All the text and comments are in french, but the code is in English. I don't know why.
@@ -6,8 +6,9 @@ All the text and comments are in french, but the code is in English. I don't kno
 Ask a number of time a random capital and country to know about.
 <br><i><b> I do not think coming back on it.</b></i>
 <br> I've already implemented a lot of features and I think it's enough for a small project...
-<br> These Informations are to give to the program at it's launch. <br>like : '<i><b>python capitales.py 2 1</b></i>'
+<br> These Informations are to give to the program at it's launch. like : '<i><b>python capitales.py 2 1</b></i>'
 <br>-
+<h3 align=center>The sign system :</h3>
 <table align=center>
     <tr>
         <td><b><h4>Variable</h4></b></td>
@@ -32,7 +33,7 @@ Ask a number of time a random capital and country to know about.
         <td><b>Save mode</b></td>
         <td><i>int</i></td>
         <td>Gives a choice between 3 saving modes :
-        <br>-<b>1</b>:Create a new file; -<b>2-3</b>:Using an existing(<i>creating if not exists</i>){appending or wrinting} </td>
+        <br>-<b>1</b>:Create a new file; -<b>2-3</b>:Using an existing(appending or wrinting) </td>
         <td><b>/s:</b>(<i>number</i>)</td>
     </tr>
     <tr>
@@ -44,7 +45,8 @@ Ask a number of time a random capital and country to know about.
     <tr>
         <td><b>Save File</b></td>
         <td><i>string</i></td>
-        <td>Is the file were chosen data will go.(<i>by the saveType</i>)</td>
+        <td>Is the file were chosen data will be saved.(<i>by the saveType</i>)
+            <br><i>The data in questions is (chosen) capital cities, to reuse the program on that.</i> </td>
         <td><b>/sf:</b>(<i>file's Name<i>)</td>
     </tr>
     <tr>
