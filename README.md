@@ -6,7 +6,8 @@ All the text and comments are in french, but the code is in English. I don't kno
 Ask a number of time a random capital and country to know about.
 <br><i><b> I do not think coming back on it.</b></i>
 <br> I've already implemented a lot of features and I think it's enough for a small project...
-<br>
+<br> These Informations are to give to the program at it's launch. <br>like : '<i><b>python capitales.py 2 1</b></i>'
+<br>-
 <table align=center>
     <tr>
         <td><b><h4>Variable</h4></b></td>
