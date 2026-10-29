@@ -139,17 +139,19 @@ mode : int= 1
 questionNumber,mode,saveMode = refering((questionNumber,mode,saveMode),entryInts) 
 
 def parse(text:str) -> tuple : 
-    if text == "" : return None 
+    """Tansforme un String en tuple contenant les informations du pays.<br>Renvoie None dans le cas de format incorrect."""
     info = (text).split(",") # il y a ["country (type)","capital"]
-    #print(info)  
+    if len(info) != 2 or (len(text.strip()) < 3): return None #virgule et le reste non vide
+
     determiner = None
     cap2 = None #NOTE : None prend moins de place...et après on n'a qu'à faire 'is None'
     cap1 = info[1].strip()
-    info = info[0].split("(") #on prend "country (type)" en ["country","type)"]
 
+    info = info[0].split("(") #on prend "country (type)" en ["country","type)"]
     country = info[0]
     if len(info) > 1 :
         determiner = info[1].removesuffix(")")
+
     if "/" in cap1 :
         caps = cap1.split("/")
         cap1 = caps[0].strip()
@@ -165,6 +167,7 @@ def comparateCapital(answer : str,cap : tuple[str]) :
         win = (cap[1].lower() == answer )
     return win
 def capitalAsk (infos : tuple[str,str,tuple]) -> bool:
+    """Demande pour une capitale. Renvoie le résultat du test."""
     nameType, country, capitale = infos #the only we to transcript a tuple
     print ("Quelle est la capitale ", end = "")
 
@@ -186,6 +189,7 @@ def capitalAsk (infos : tuple[str,str,tuple]) -> bool:
     return stamement
 
 def countryAsk (infos : tuple[str,str,tuple]) -> bool :
+    """Demande pour un pays, renvoie le résultat du test."""
     nameType, country, capitale = infos
     print( "Quel est le pays dont la capitale est ",end="")
     if capitale[1] is None :
@@ -208,7 +212,12 @@ def randomAltAsk(infos) -> bool :
     n = randint(0,1)
     if n== 0 : return capitalAsk(infos)
     else : return countryAsk(infos)
-
+def purify(iList : list[str]) :
+    pList = []
+    for info in iList :
+        if info.strip() != "" :
+            pList.append(info)
+    return pList
 def randomAsking(number : int , informations : list, mode : int | None = 1) -> tuple [int ,list[tuple[int, bool]]] : 
     """Pose un certain nombre de questions, à partir d'une liste. <i>Utilise randInt. </i>
     ~
@@ -220,6 +229,7 @@ def randomAsking(number : int , informations : list, mode : int | None = 1) -> t
     except :  
         print("Mode de fonctionnement non reconnu, initialisé à 1. ") #à voir plus tard si jamais on veut redemander
         ask = (askWays[0])
+    informations = purify(informations)
     nU = len(informations)
     if nU < number :
         print("\nLe nombre de questions est supérieur au nombre de pays disponibles :",number,"questions pour",nU,"pays disponibles.\n")
@@ -228,7 +238,7 @@ def randomAsking(number : int , informations : list, mode : int | None = 1) -> t
     usedList = []
     score = 0
     n = 0
-    while n < number :
+    while n < number and nU > 0 :
         radex = randint(0, nU - 1) #randomIndex
         index = usableList[radex]
         info = parse(informations[index])
@@ -242,6 +252,7 @@ def randomAsking(number : int , informations : list, mode : int | None = 1) -> t
 
         usableList.pop(radex) #pour ne pas le retrouver
         nU -= 1
+    if n < number : print("\nla série de question a été interrompue par maque de pays.\nUne ou plusieurs erreurs ont dû être trouvées dans la sauvegarde.\n")#c'est pas censé passer de  base...
     return score, usedList
 
 def resultPrint(usedList : list[int,bool],informations: list[tuple]) :
