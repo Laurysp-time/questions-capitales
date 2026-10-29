@@ -6,7 +6,7 @@ All the text and comments are in french, but the code is in English. I don't kno
 Ask a number of time a random capital and country to know about.
 <br><i><b> I do not think coming back on it.</b></i>
 <br> I've already implemented a lot of features and I think it's enough for a small project...
-<br> These Informations are to give to the program at it's launch. like : '<i><b>python capitales.py 2 1</b></i>'
+<br> These Informations are to give to the program at it's launch. like : <code>'<i><b>python capitales.py 2 1</b></i>'</code>
 <br>-
 <h3 align=center>The sign system :</h3>
 <table align=center>
@@ -53,15 +53,15 @@ Ask a number of time a random capital and country to know about.
         <td><b>Specifications</b></td>
         <td><i>string</i></td>
         <td>The differents options that can be added :
-        <br>-'r' : results show the resuslts of the test
-        <br>-'e' : ephemeral, no questions on saving the data
-        <br>-'S' : Save. Activate all  in default settings to save with no questions.</td>
+        <br>-<b>'r'</b> : results show the resuslts of the test
+        <br>-<b>'e'</b> : ephemeral, no questions on saving the data
+        <br>-<b>'S'</b> : Save. Activate all  in default settings to save with no questions.</td>
         <td><b>/:</b>(<i>composition</i>)</td>
     </tr>
 </table>
 <br>In the system, the <b><i>unmarked</i></b> information will have less importance, <br> as the signed ones can be placed anywhere (as long there's spacing)
-<br><br> Each data type is processed apart from another, <br>in example, <i><b>1 2 3</b></i> <br>equals <i><b>/s:3 /m:2 /n:1</b></i>, <br>equals <i><b>2 /n:1 3</b></i>, <br>and <i><b>1 2 3 4</b></i> it <b>throws an error</b> (too much of the same type : int).
-<br> A data type does not affect another.
+<br><br> Each data type is processed apart from another, <br>in example, <code><i><b>1 2 3</b></i></code> <br>equals <i><b><code>/s:3 /m:2 /n:1</code></b></i>, <br>equals <i><b><code>2 /n:1 3</code></b></i>, <br>and <i><b><code>1 2 3 4</code></b></i> it <b>induce the end of the script</b> (too much of the same type : int).
+<br> A data type does not affect another. Between types, order don't matter.
 <br><br>I could implement the saveType but, I <b>can</b> not to.
 <br>(it is also the only way left to reject the saving ? to see)
 <br>There is <b>much</b> left to do but I will leave it like that. 
