@@ -9,7 +9,6 @@ if entryLenght > 6  :
     sys.exit()
 
 
-#changement fait : on ne décode pas le tout au départ.
 def getTwoLists(list : list[str]) -> tuple[list[int], list[str]] :
     """En prévision et prération de plus de modularité pour d'autres sytèmes à venir.
     ~ 
@@ -20,6 +19,7 @@ def getTwoLists(list : list[str]) -> tuple[list[int], list[str]] :
         if string.isnumeric() : intList.append(int(string))
         else : stringList.append(string)
     return (intList,stringList)
+
 rules = ["/n:","/m:","/s:","/of:","/sf:","/:"]#nombre;mode;savemode;originFile;saveFile;specifications
 def fill(list1 : list, list2 : list, rElement = None, appAtFull : bool | None = False) -> list :
     """Remplis d'un liste selon une autre, les espaces considérés comme vides.
@@ -43,10 +43,11 @@ def fill(list1 : list, list2 : list, rElement = None, appAtFull : bool | None = 
     return list1
 
 def understand(list: list[str],guide : list[str],gap :str | None = None) :
-    """Permet de repositionnner et classer les entrées, selon une liste depréfixes.
+    """Permet de repositionnner et classer les entrées, selon une liste de préfixes.
     ~
-    à voir plus tard s'il on ne force pas de signer d'abord...  
-    <br><i>ça aurait pu entièrment marché mais, à cause des valeurs non signées...c compliqué</i>"""
+    distingue les valeurs signées et nonsignées dans des listes différentes.
+    <i>la liste signée fait <b>toujours</b>la même taille.
+    """
     indicatedList = []
     notIndicated = []
     for i in range(len(guide)) :
@@ -66,7 +67,7 @@ def understand(list: list[str],guide : list[str],gap :str | None = None) :
 
 
 def refering(args : tuple, l : list) : #sert à rien ? il faut les None, je crois, pour les questions. On retire les questions ?
-    """Permet d'affecter à un tuple d'arguments une liste et de garder la valeur d'un élément si son parallèle a une valeur choisie. <i>(sinon None)</i>
+    """Permet d'affecter à un tuple d'arguments une liste et de garder la valeur d'un élément si son parallèle vaut None. 
     ~
     si le nombre des arguments donnés dépasse le nombre d'objets dans liste, il ne renvoie pas d'erreur."""
     arguments = list(args)
@@ -96,6 +97,9 @@ def toIntVerify(list : list[str]) -> list[int] :
     return intlist
 
 def listBool(entry : str, guide : tuple) :
+    """Déclare la présence ou l'absence de signes donnés dans une chaine de caractères.
+    ~
+    En des valeurs booléennes <code><i>True</i></code> ou <code><i>False</i></code>"""
     modificators = []
     index = 0
     errors = 0
@@ -111,12 +115,12 @@ def listBool(entry : str, guide : tuple) :
     return modificators 
 
 
-entries,unsigned = understand(sys.argv[1:],rules) #le premier est le script. je crois.
+entries,unsigned = understand(sys.argv[1:],rules) #le premier est le script. je crois. Donc on ne le compte pas.
 unsignI,unsignS = getTwoLists(unsigned)#Int,String
 
-entryInts = fill(toIntVerify(entries[:3]),unsignI) 
+entryInts = fill(toIntVerify(entries[:3]),unsignI) #fill vérifie aussi si les variables sont en trop grand nombre
 entryStrings = fill(entries[3:], unsignS)
-nIntEntry = len(entryInts) #ça fait beaucoup là non ? ça sert à rien ? si on fait to int verify
+
 
 
 defaultSaveName = "CapitalesSave.csv"#On peut le laisser pour la compréhension...
@@ -147,7 +151,7 @@ def parse(text:str) -> tuple :
     cap2 = None #NOTE : None prend moins de place...et après on n'a qu'à faire 'is None'
     cap1 = info[1].strip()
 
-    info = info[0].split("(") #on prend "country (type)" en ["country","type)"]
+    info = info[0].split("(") #on a "country (type)" en ["country","type)"]
     country = info[0]
     if len(info) > 1 :
         determiner = info[1].removesuffix(")")
@@ -160,7 +164,20 @@ def parse(text:str) -> tuple :
             cap2 = None
     return (determiner,country,(cap1,cap2)) #HACK : écoute, je voulais faire une classe, mais...
 
+def purify(iList : list[str]) :
+    """effacer les objets qui sont issus d'erreur de ligne.
+    ~
+    Permet de ne pas fausser le nombre pays."""
+    pList = []
+    for info in iList :
+        if info.strip() != "" :
+            pList.append(info)
+    return pList
+
 def comparateCapital(answer : str,cap : tuple[str]) :
+    """Permet de comparer une chaine <i>(une réponse)</i> à un tuple de 2 chaines <i>(capitles)</i>
+    ~
+    On considère la deuxième vide qu'en cas de None."""
     answer = answer.strip().lower()
     win = (cap[0].lower() == answer)
     if (not win) and (not (cap[1] is None)) :
@@ -202,22 +219,24 @@ def countryAsk (infos : tuple[str,str,tuple]) -> bool :
         statement = False
     if statement : print("Bonne réponse !")
     else : print("Mauvaise réponse !")
-    print("La réponse était :",nameType ,country)
+
+    print("La réponse était :",end="")
+    if not (nameType is None) : print(nameType, end=" ") 
+    print(country)
     return statement
  
 def alternateAsking (infos, n) -> bool:
+    """Alterne entre les 2 modes primordiaux de questions."""
     if (n%2) == 0 : return countryAsk(infos)
     else : return capitalAsk(infos)
 def randomAltAsk(infos) -> bool :
+    """Demande aléatoirement entre les deux modes de question primordiaux."""
     n = randint(0,1)
     if n== 0 : return capitalAsk(infos)
     else : return countryAsk(infos)
-def purify(iList : list[str]) :
-    pList = []
-    for info in iList :
-        if info.strip() != "" :
-            pList.append(info)
-    return pList
+
+
+
 def randomAsking(number : int , informations : list, mode : int | None = 1) -> tuple [int ,list[tuple[int, bool]]] : 
     """Pose un certain nombre de questions, à partir d'une liste. <i>Utilise randInt. </i>
     ~
@@ -256,6 +275,7 @@ def randomAsking(number : int , informations : list, mode : int | None = 1) -> t
     return score, usedList
 
 def resultPrint(usedList : list[int,bool],informations: list[tuple]) :
+    """Permet d'afficher les résultats obtenus par la fonction <b>randomAsking</b>"""
     for index, succeed in usedList :
         print("Pays :",informations[index][1], end="; ")
         print("Capitale :", informations[index][2], end= "; ")
