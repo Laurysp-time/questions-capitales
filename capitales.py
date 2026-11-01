@@ -1,6 +1,6 @@
 import sys
 from random import randint
-from os.path import lexists #C'est juste pour dire si le fichier n'existe pas.(sans causer exprès FileExistsError)
+from os.path import exists #C'est juste pour dire si le fichier n'existe pas.(sans causer exprès FileExistsError)
 entryLenght = len(sys.argv) 
 if entryLenght == 1 :
     print("\nInformation: Ce script a pour but d'être utilisé dans le terminal, avec des paramètres additionnels.\n") #NOTE : même s'il  y a moyen de faire sans.
@@ -286,7 +286,7 @@ def resultPrint(usedList : list[int,bool],informations: list[tuple]) :
 
 def savingAt(Data : str,Filename :str | None = "CapitalesSave.csv",mode : str | None = "w") -> bool :
     """sauvegarde un ficher à un emplacement, mode écrasement et mode ajout."""
-    if not lexists(Filename) :
+    if not exists(Filename) :
         print("le fichier n'existait pas, mais a été créé.")
     try :
         file = open(Filename,mode)
