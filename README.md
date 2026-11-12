@@ -7,7 +7,7 @@ Ask a number of time a random capital and country to know about.
 <br><i><b> I do not think coming back on it.</b></i>
 <br> I've already implemented a lot of features and I think it's enough for a small project...
 <br> It is possible to do  2 types of questions, on 4 settings, and a simple saving system is given for the used Countries.
-<br> These Informations are to give to the program at it's launch. like : <code>'<i><b>python capitales.py 2 1</b></i>'</code>
+<br> These Informations are to give to the program at it's launch. like : <code>'<b><i>python</i> capitales.py 2 1</b>'</code>
 <br>-
 <h3 align=center>The sign system :</h3>
 <table align=center>
