@@ -1,5 +1,5 @@
 <h3>That's just a small class project, meant to test the use of scripts in the terminal and reading and the saving files in python.
-<br><i>Could contain lots of errors.</i></h3>
+<br><i>May contain lots of errors.</i></h3>
 <br>
 All the text and comments are in french, but the code is in English. I don't know why.
 <br>
