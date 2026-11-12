@@ -6,6 +6,7 @@ All the text and comments are in french, but the code is in English. I don't kno
 Ask a number of time a random capital and country to know about.
 <br><i><b> I do not think coming back on it.</b></i>
 <br> I've already implemented a lot of features and I think it's enough for a small project...
+<br> It is possible to do  2 types of questions, on 4 settings, and a simple saving system is given for the used Countries.
 <br> These Informations are to give to the program at it's launch. like : <code>'<i><b>python capitales.py 2 1</b></i>'</code>
 <br>-
 <h3 align=center>The sign system :</h3>
@@ -63,5 +64,4 @@ Ask a number of time a random capital and country to know about.
 <br><br> Each data type is processed apart from another, <br>in example, <code><i><b>1 2 3</b></i></code> <br>equals <i><b><code>/s:3 /m:2 /n:1</code></b></i>, <br>equals <i><b><code>2 /n:1 3</code></b></i>, <br>and <i><b><code>1 2 3 4</code></b></i> it <b>induce the end of the script</b> (too much of the same type : int).
 <br> A data type does not affect another. Between types, order don't matter.
 <br><br>I could implement the saveType but, I <b>can</b> not to.
-<br>(it is also the only way left to reject the saving ? to see)
-<br>There is <b>much</b> left to do but I will leave it like that. 
+<br>There is <b>much</b> left to do but I will leave that way, at least for a moment.

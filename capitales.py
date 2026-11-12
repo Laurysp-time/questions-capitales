@@ -114,45 +114,45 @@ def listBool(entry : str, guide : tuple) :
     if errors > 0 : print("Il y a eu",errors,"erreur(s) au niveau des spécifications : spécification inconnue.")
     return modificators 
 
+def useInputs() -> tuple :
+    """Petit ajustement d'encapsulation pour ne pas avoir trop de variables globales."""
+    entries,unsigned = understand(sys.argv[1:],rules) #le premier est le script. je crois. Donc on ne le compte pas.
+    unsignI,unsignS = getTwoLists(unsigned)#Int,String
 
-entries,unsigned = understand(sys.argv[1:],rules) #le premier est le script. je crois. Donc on ne le compte pas.
-unsignI,unsignS = getTwoLists(unsigned)#Int,String
+    entryInts = fill(toIntVerify(entries[:3]),unsignI) #fill vérifie aussi si les variables sont en trop grand nombre
+    entryStrings = fill(entries[3:], unsignS)
 
-entryInts = fill(toIntVerify(entries[:3]),unsignI) #fill vérifie aussi si les variables sont en trop grand nombre
-entryStrings = fill(entries[3:], unsignS)
+    defaultSaveName = "CapitalesSave.csv"#On peut le laisser pour la compréhension...
+    infoFileName : str = "Capitales.csv"
+    saveFileName : str = None
+    spécifications_Str : str = None #Peut-on faire qu'il prenne tous les trucs qui suivent, avec et/ou sans espaces ?
+    infoFileName,saveFileName,spécifications_Str = refering((infoFileName,saveFileName,spécifications_Str),entryStrings)
+    #vérifie que si on a marqué sans valeur, on mette la valeur déjà mise
 
+    spécifications_bool : list [bool]= listBool(spécifications_Str,["r","e","S"])
+    saveMode : int = None
+    saveType : int = None
+    if spécifications_bool[2] :
+        saveMode = 1
+        saveType = 1
+        if (saveFileName is None) : saveFileName = defaultSaveName
 
+    questionNumber : int = 3
+    mode : int= 1
+    questionNumber,mode,saveMode = refering((questionNumber,mode,saveMode),entryInts) 
+    return infoFileName,saveFileName,spécifications_bool,questionNumber,mode,saveMode,saveType
 
-defaultSaveName = "CapitalesSave.csv"#On peut le laisser pour la compréhension...
-infoFileName : str = "Capitales.csv"
-saveFileName : str = None
-spécifications_Str : str = None #Peut-on faire qu'il prenne tous les trucs qui suivent, avec et/ou sans espaces ?
-infoFileName,saveFileName,spécifications_Str = refering((infoFileName,saveFileName,spécifications_Str),entryStrings)
-#vérifie que si on a marqué sans valeur, on mette la valeur déjà mise
-
-spécifications_bool : list [bool]= listBool(spécifications_Str,["r","e","S"])
-saveMode : int = None
-saveType : int = None
-if spécifications_bool[2] :
-    saveMode = 1
-    saveType = 1
-    if (saveFileName is None) : saveFileName = defaultSaveName
-
-questionNumber : int = 3
-mode : int= 1
-questionNumber,mode,saveMode = refering((questionNumber,mode,saveMode),entryInts) 
-
-def parse(text:str) -> tuple : 
-    """Tansforme un String en tuple contenant les informations du pays.<br>Renvoie None dans le cas de format incorrect."""
+def parse(text:str) -> tuple[str|None,str,tuple[str,str|None]]|None : 
+    """Tansforme un String en tuple contenant les informations du pays.<br>Renvoie None dans le cas de format incorrect et pour chaque manque."""
     info = (text).split(",") # il y a ["country (type)","capital"]
-    if len(info) != 2 or (len(text.strip()) < 3): return None #virgule et le reste non vide
+    if len(info) != 2 or (len(text.strip()) < 5): return None #virgule et le reste non vide
 
     determiner = None
     cap2 = None #NOTE : None prend moins de place...et après on n'a qu'à faire 'is None'
     cap1 = info[1].strip()
 
     info = info[0].split("(") #on a "country (type)" en ["country","type)"]
-    country = info[0]
+    country = info[0].strip()
     if len(info) > 1 :
         determiner = info[1].removesuffix(")")
 
@@ -186,22 +186,22 @@ def comparateCapital(answer : str,cap : tuple[str]) :
 def capitalAsk (infos : tuple[str,str,tuple]) -> bool:
     """Demande pour une capitale. Renvoie le résultat du test."""
     nameType, country, capitale = infos #the only we to transcript a tuple
-    print ("Quelle est la capitale ", end = "")
-
-    if nameType == "le" : print("du ", end="") #I made for evry case possible, technically
-    elif nameType == "les" :print("des ", end= "")
-    elif  (nameType == "la") or (nameType == "l'") :  print("de "+ nameType, end=" ") 
-    elif (nameType is None) : print("de", end=" ") 
-    else : print(nameType, end = " ")
+    print ("Quelle est le nom de la capitale ", end = "")
+    match nameType :
+        case "le" : print("du ", end="") #I made for evry case possible, technically
+        case "les" :print("des ", end= "")
+        case "la" | "l'" :  print("de "+ nameType, end=" ") 
+        case None : print("de", end=" ") 
+        case _: print("de",nameType, end = " ")
  
     answer = input(country + " ? : ")
     stamement = comparateCapital(answer,capitale)
     if stamement : print("Bonne réponse !")
-    else : print("Mauvaise réponse !")
-
-    print("La réponse était : '"+capitale[0]+"'",end=" ")
-    if not (capitale[1] is None) : print("ou "+"'"+capitale[1]+"'", end="")
-    print()
+    elif answer  : print("Mauvaise réponse !") #s'il met rien il a pas tord
+    if not stamement or not capitale[1] is None :
+        print("La réponse était : '"+capitale[0]+"'",end=" ")
+        if not (capitale[1] is None) : print("ou "+"'"+capitale[1]+"'", end="")
+        print()
 
     return stamement
 
@@ -211,18 +211,19 @@ def countryAsk (infos : tuple[str,str,tuple]) -> bool :
     print( "Quel est le pays dont la capitale est ",end="")
     if capitale[1] is None :
         print(capitale[0], end="")
-    else : print("'"+capitale[0]+"'"+" ou "+"'"+capitale[1]+"'")
+    else : 
+        print("'"+capitale[0]+"'"+" ou "+"'"+capitale[1]+"'")
     print(" ? :", end= "")
     answer = input()
     statement = True
     if answer.lower().strip() != country.lower().strip() : 
         statement = False
     if statement : print("Bonne réponse !")
-    else : print("Mauvaise réponse !")
-
-    print("La réponse était :",end="")
-    if not (nameType is None) : print(nameType, end=" ") 
-    print(country)
+    else : #pourquoi afficher si c'est bon ?
+        if answer : print("Mauvaise réponse !")
+        print("La réponse était :",end="")
+        if not (nameType is None) : print(nameType, end=" ") 
+        print(country)
     return statement
  
 def alternateAsking (infos, n) -> bool:
@@ -237,14 +238,14 @@ def randomAltAsk(infos) -> bool :
 
 
 
-def randomAsking(number : int , informations : list, mode : int | None = 1) -> tuple [int ,list[tuple[int, bool]]] : 
+def randomAsking(number : int , informations : list, mode : int = 1) -> tuple [int ,list[tuple[int, bool]]] : 
     """Pose un certain nombre de questions, à partir d'une liste. <i>Utilise randInt. </i>
     ~
     Récupère le nombre de questions, les informations sur les pays et, optionellement, le mode de questionnement. 
     Retourne un tuple avec le score et la site des questions passées(en tuple index-résultat)."""
     askWays = (capitalAsk,countryAsk,alternateAsking,randomAltAsk)
     try : 
-        ask = askWays [mode - 1]
+        ask = askWays[mode - 1]
     except :  
         print("Mode de fonctionnement non reconnu, initialisé à 1. ") #à voir plus tard si jamais on veut redemander
         ask = (askWays[0])
@@ -268,26 +269,29 @@ def randomAsking(number : int , informations : list, mode : int | None = 1) -> t
             if succeed : score += 1
             usedList.append((index,succeed))
             n += 1
-
         usableList.pop(radex) #pour ne pas le retrouver
         nU -= 1
-    if n < number : print("\nla série de question a été interrompue par maque de pays.\nUne ou plusieurs erreurs ont dû être trouvées dans la sauvegarde.\n")#c'est pas censé passer de  base...
+    if n < number : print("\nLa série de questions a été interrompue par manque de pays disponibles.\nUne ou plusieurs erreurs ont dûes être trouvées dans la sauvegarde.\n")#c'est pas censé passer de  base...
     return score, usedList
 
-def resultPrint(usedList : list[int,bool],informations: list[tuple]) :
-    """Permet d'afficher les résultats obtenus par la fonction <b>randomAsking</b>"""
+def resultPrint(usedList : list[tuple[int,bool]],informations: list[tuple]) :
+    """Permet de traiter et afficher les résultats obtenus par la fonction <b>randomAsking</b>
+    <br>Utilise la fonction parse."""
     for index, succeed in usedList :
-        print("Pays :",informations[index][1], end="; ")
-        print("Capitale :", informations[index][2], end= "; ")
+        info = parse(informations[index])
+        print("Pays :",info[1], end="; ")
+        print("Capitale :",info[2][0], end= "")
+        if not info[2][1] is None : print(" ~ "+info[2][1],end="")
+        print(end="; ")
         print("résultat :", end= " ")
         if succeed : print("-réussi-")
         else : print("-échoué-")
 
 
-def savingAt(Data : str,Filename :str | None = "CapitalesSave.csv",mode : str | None = "w") -> bool :
+def savingAt(Data : str,Filename :str = "CapitalesSave.csv",mode : str = "w") -> bool :
     """sauvegarde un ficher à un emplacement, mode écrasement et mode ajout."""
     if not exists(Filename) :
-        print("le fichier n'existait pas, mais a été créé.")
+        print("le fichier n'existait pas, mais est en cours de création.")
     try :
         file = open(Filename,mode)
         file.write(Data)
@@ -299,10 +303,10 @@ def savingAt(Data : str,Filename :str | None = "CapitalesSave.csv",mode : str | 
         print("Fichier sauvegardé. ")
     file.close()
     return True
-def savingIn (data : str,fileName : str | None= "CapitalesSave.csv", maxTries : int | None = 5)  :
-    """Crée un nouveau fichier qui contient les données envoyées. <br> On rajoute <b>(n)</b> si le nom était déjà utilisé  """
+def savingIn (data : str,fileName : str = "CapitalesSave.csv", maxTries : int = 5)  :
+    """Crée un nouveau fichier qui contient les données envoyées. <br>On rajoute <b>(n)</b> si le nom était déjà utilisé  """
     opened = False
-    tries = 0
+    tries = 1
     name :str = fileName
     while not opened and tries < maxTries:
         tries += 1
@@ -321,7 +325,6 @@ def savingIn (data : str,fileName : str | None= "CapitalesSave.csv", maxTries : 
         print("Le nombre maximal d'essais de ",maxTries," est dépassé. Abandon de la sauvegarde.")
         return 
     try :
-        #print(data)
         file.write(data)
         file.close()
     except Exception as e :
@@ -331,7 +334,7 @@ def savingIn (data : str,fileName : str | None= "CapitalesSave.csv", maxTries : 
     else : return 
  
     
-def selecting(resultList : list ,informations : list, filter : int | None = 0)->str :
+def selecting(resultList : list[tuple[int,bool]] ,informations : list[str], filter : int = 0)->str :
     """Récupère les résutats en fonction d'un filtre : <i><b>Sans filtre, uniquement gagnants, uniquement perdants</b></i>
     <p> Rend un type <b><i>String</i></b>"""
     data = ""
@@ -348,12 +351,15 @@ def selecting(resultList : list ,informations : list, filter : int | None = 0)->
     return data
 
 
-def proposeSaving(results : tuple, informations : list[tuple],saveType : int, saveMode : int, saveFileName : str, defaultSaveName = "CapitalesSave.csv") :
+def proposeSaving(results : tuple[int,list], informations : list[tuple],saveType : int|None = None, saveMode : int|None = None, saveFileName : str |None = None, defaultSaveName = "CapitalesSave.csv") :
     """Une fonction simple qui permet de poser des questions pour la sauvegarde et sauvegarder"""
     if saveType is None :
-        answer = (input("Veux-tu sauvegader la session ? Si oui,quelle partie des résultats ?\n 1 = Tout, 2 = réussites, 3 = échecs ? ")).strip()
+        answer = (input("Veux-tu sauvegader la session ?\nSi oui,quelle partie des résultats ?\n 1 = Tout, 2 = réussites, 3 = échecs ? ")).strip()
         if not answer.isdigit() :
-            print("Format de chiffres non reconnu. ce sera un non.")
+            if len(answer) != 0 :
+                print("Format de chiffres non reconnu. ce sera un non.")
+            else :
+                print("Sauvegarde refusée.")
             return
         saveType = int(answer)
     if saveType < 1 or saveType > 4 :
@@ -369,13 +375,13 @@ def proposeSaving(results : tuple, informations : list[tuple],saveType : int, sa
         else :
             print("Format de nombre non reconnu. Création d'un nouveau fichier. ")
             saveMode = 1
-
     if saveMode < 1 or saveMode > 3 :
-            print("Valeur de mode de sauvegarde non attendue :", end="")
+            print("Valeur de mode de sauvegarde non attendue : Création de fichier choisie par défaut.")
             saveMode = 1
 
     if saveFileName is None :
-        saveFileName = input("Quel sera son nom ? :").strip()
+        if saveMode == 1 :saveFileName = input("Quel sera son nom ? :").strip()
+        else :input("Quel est son nom ? :").strip()
     if len(saveFileName) < 4  :
         saveFileName = defaultSaveName
         if saveFileName != "" :
@@ -394,6 +400,7 @@ def proposeSaving(results : tuple, informations : list[tuple],saveType : int, sa
             print("Écrasement.")
         savingAt(selectedData,saveFileName,mode)
     return
+
 def fileTaker(fileName :str) :
     """respect the <b>D.R.Y.</b> rule"""
     capFile = None
@@ -403,25 +410,24 @@ def fileTaker(fileName :str) :
         print("Le fichier du nom de '"+fileName+"' n'a pas été trouvé.")
     except Exception as er:
         print("la récupération du fichier",fileName," s'est mal passé. Erreur :", type(er).__name__)
-        return None
     return capFile
 
 
+def main() :
+    infoFileName,saveFileName,spécifications_bool,questionNumber,mode,saveMode,saveType = useInputs() 
+    if infoFileName != "Capitales.csv" : 
+        print("Récupère les information à partir du fichier : "+ infoFileName+".")
+    capFile = fileTaker(infoFileName)
+    if capFile is None :
+        sys.exit()
 
-if infoFileName != "Capitales.csv" : 
-    print("Récupère les information à partir du fichier : "+ infoFileName+".")
-capFile = fileTaker(infoFileName)
-if capFile is None :
-    sys.exit()
-
-
-countriesInfos = (capFile.read().split("\n"))
-capFile.close()
-results = randomAsking(questionNumber, countriesInfos, mode)
-print("Tu as eu un résultat de",results[0],"points.")
-if spécifications_bool[0] : 
-    print()
-    resultPrint(results[1],countriesInfos)
-    print()
-if not spécifications_bool[1] : proposeSaving(results,countriesInfos,saveType,saveMode,saveFileName) 
-
+    countriesInfos = (capFile.read().split("\n"))
+    capFile.close()
+    results = randomAsking(questionNumber, countriesInfos, mode)
+    print("Tu as eu un résultat de",results[0],"points.")
+    if spécifications_bool[0] : 
+        print()
+        resultPrint(results[1],countriesInfos)
+        print()
+    if not spécifications_bool[1] : proposeSaving(results,countriesInfos,saveType,saveMode,saveFileName) 
+main()
